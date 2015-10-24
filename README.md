@@ -19,7 +19,7 @@ Documentation is available via
     )
     
     func main() {
-    	bp, err := bufpool.New()
+    	bp, err := bufpool.New() // can have one or more of PoolSize(), BufferSize, and MaxSize()
     	if err != nil {
     		log.Fatal(err)
     	}
