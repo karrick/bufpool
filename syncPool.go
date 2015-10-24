@@ -32,7 +32,7 @@ type SyncPool struct {
 //        		go func() {
 //        			for j := 0; j < 1000; j++ {
 //        				bb := bp.Get()
-//        				for k := 0; k < 3*bufpool.DefaultBufferSize; k++ {
+//        				for k := 0; k < 3*bufpool.DefaultBufSize; k++ {
 //        					bb.WriteByte(byte(k % 256))
 //        				}
 //        				bp.Put(bb)
@@ -42,21 +42,21 @@ type SyncPool struct {
 //        }
 func NewSyncPool(setters ...func(*poolConfig) error) (FreeList, error) {
 	pc := &poolConfig{
-		chSize:  DefaultPoolSize,
-		defSize: DefaultBufferSize,
-		maxSize: DefaultMaxBufferSize,
+		poolSize: DefaultPoolSize,
+		bufSize:  DefaultBufSize,
+		maxKeep:  DefaultMaxKeep,
 	}
 	for _, setter := range setters {
 		if err := setter(pc); err != nil {
 			return nil, err
 		}
 	}
-	if pc.maxSize < pc.defSize {
-		return nil, fmt.Errorf("max buffer size must be greater or equal to default buffer size: %d, %d", pc.maxSize, pc.defSize)
+	if pc.maxKeep < pc.bufSize {
+		return nil, fmt.Errorf("max buffer size must be greater or equal to default buffer size: %d, %d", pc.maxKeep, pc.bufSize)
 	}
 	bp := &SyncPool{pc: *pc}
 	bp.pool.New = func() interface{} {
-		return bytes.NewBuffer(make([]byte, 0, bp.pc.defSize))
+		return bytes.NewBuffer(make([]byte, 0, bp.pc.bufSize))
 	}
 	return bp, nil
 }
@@ -69,7 +69,7 @@ func (bp *SyncPool) Get() *bytes.Buffer {
 // Put will return a used buffer back to the free-list. If the capacity of the used buffer grew
 // beyond the max buffer size, it will be discarded and its memory returned to the runtime.
 func (bp *SyncPool) Put(bb *bytes.Buffer) {
-	if cap(bb.Bytes()) > bp.pc.maxSize {
+	if cap(bb.Bytes()) > bp.pc.maxKeep {
 		return // drop buffer on floor if too big
 	}
 	bb.Reset()

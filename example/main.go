@@ -15,7 +15,7 @@ func main() {
 		go func() {
 			for j := 0; j < 1000; j++ {
 				bb := bp.Get()
-				for k := 0; k < 3*bufpool.DefaultBufferSize; k++ {
+				for k := 0; k < 3*bufpool.DefaultBufSize; k++ {
 					bb.WriteByte(byte(k % 256))
 				}
 				bp.Put(bb)

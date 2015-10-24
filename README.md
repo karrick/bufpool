@@ -1,15 +1,21 @@
 # bufpool
 
-Go library for using a free list of byte buffers.
+Go library for using a free-list of byte buffers.
 
 ## Description
 
-Several free-list algorithms are included to determine which performs
-best for various application scenarios.
+Several free-list algorithms are included to allow selection of
+whichever performs best for a particular application scenario.
 
-* NewChanPool -- uses channels to provide concurrent access to internal structures
+* NewChanPool -- uses Go channels to provide concurrent access to internal structures
 * NewLockPool -- uses sync.Mutex to provide concurrent access to internal structures
 * NewSyncPool -- uses sync.Pool to provide concurrent access to internal structures
+
+Each of these algorithms performs quite differently when run on
+different architectures, and with different amounts of concurrency.
+
+Benchmark functions are provided to determine which buffer free-list
+algorithm best suits a given application.
 
 ### Usage
 
@@ -18,37 +24,67 @@ Documentation is available via
 
 ### Example
 
+The most basic example is creating a buffer pool and using it.
+
 ```Go
     package main
-    
+
     import (
-    	"log"
-    
-    	"github.com/karrick/bufpool"
+        "log"
+        "github.com/karrick/bufpool"
     )
-    
+
     func main() {
-        // bufpool.New*() can all have one or more of PoolSize(), BufferSize, and MaxSize()
-        // to customize the FreeList
-    	bp, err := bufpool.NewChanPool()
-    	if err != nil {
-    		log.Fatal(err)
-    	}
-    	for i := 0; i < 4*bufpool.DefaultPoolSize; i++ {
-    		go func() {
-    			for j := 0; j < 1000; j++ {
-    				bb := bp.Get()
-    				for k := 0; k < 3*bufpool.DefaultBufferSize; k++ {
-    					bb.WriteByte(byte(k % 256))
-    				}
-    				bp.Put(bb)
-    			}
-    		}()
-    	}
+        bp, err := bufpool.NewChanPool()
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        for i := 0; i < 4*bufpool.DefaultPoolSize; i++ {
+            go func() {
+                for j := 0; j < 1000; j++ {
+                    bb := bp.Get()
+                    for k := 0; k < bufpool.DefaultBufSize/2; k++ {
+                        bb.WriteByte(byte(k % 256))
+                    }
+                    // NOTE: no need to reset buffer prior to release
+                    bp.Put(bb)
+                }
+            }()
+        }
     }
 ```
 
-### Performance
+During buffer pool creation, you may specify the size of newly
+allocated buffers, the max keep size of a buffer returned to the pool,
+and the size of the pool.
 
-Benchmark functions are provided to determine which buffer free-list
-algorithm best suits a given application.
+The max keep size does not mean the maximum size a buffer is allowed
+to grow. Instead, when a buffer is returned to the pool, if that
+buffer has grown beyond the specified max keep size, it will be
+garbage collected, releasing its memory back to the runtime rather
+than sit in the pool.  This prevents an unusual use of a buffer that
+grows extremely large from holding onto that memory indefinitely.
+
+Ideally one determines what the pool size, initial buffer size, and
+max buffer size should be for their application, and sets these values
+when creating the buffer pool.
+
+```Go
+    package main
+
+    import (
+        "log"
+        "github.com/karrick/bufpool"
+    )
+
+    func main() {
+        // NOTE: All variants of bufpool.New*() can have one or more of BufSize(), MaxKeep(), andPoolSize()
+        // to customize the created bufpool.FreeList.
+        bp, err := bufpool.NewChanPool(bufpool.PoolSize(64), BufSize(16*1024), MaxKeep(128*1024))
+        if err != nil {
+            log.Fatal(err)
+        }
+        // as before...
+    }
+```

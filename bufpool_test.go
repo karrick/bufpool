@@ -6,7 +6,7 @@ import (
 )
 
 func testC(bp FreeList, concurrency, loops int) {
-	const byteCount = DefaultBufferSize / 2
+	const byteCount = DefaultBufSize / 2
 
 	var wg sync.WaitGroup
 	wg.Add(concurrency)
@@ -16,7 +16,7 @@ func testC(bp FreeList, concurrency, loops int) {
 				bb := bp.Get()
 				max := byteCount
 				if j%8 == 0 {
-					max = 2 * DefaultMaxBufferSize
+					max = 2 * DefaultMaxKeep
 				}
 				for k := 0; k < max; k++ {
 					bb.WriteByte(byte(k % 256))
