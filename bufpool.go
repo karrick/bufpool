@@ -99,14 +99,14 @@ func (bp *BufPool) Put(bb *bytes.Buffer) {
 // Reset releases memory for all buffers presently in the BufPool back to the runtime. This method
 // is typically not called for long-running programs that use a free list of buffers for a long
 // time.
-func (bp *BufPool) Reset() error {
+func (bp *BufPool) Reset() {
 	for {
 		select {
 		case _ = <-bp.ch:
 			// dropbuffer
 		default:
 			// empty channel
-			return nil
+			return
 		}
 	}
 }
