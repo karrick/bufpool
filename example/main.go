@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	bp, err := bufpool.New()
+	bp, err := bufpool.NewChanPool()
 	if err != nil {
 		log.Fatal(err)
 	}

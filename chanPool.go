@@ -1,0 +1,99 @@
+package bufpool
+
+import (
+	"bytes"
+	"fmt"
+)
+
+// ChanPool maintains a free-list of buffers.
+type ChanPool struct {
+	ch chan *bytes.Buffer
+	pc poolConfig
+}
+
+// NewChanPool creates a new FreeList. The pool size, size of new buffers, and max size of buffers
+// to keep when returned to the pool can all be customized.
+//
+//        package main
+//
+//        import (
+//        	"log"
+//
+//        	"github.com/karrick/bufpool"
+//        )
+//
+//        func main() {
+//        	bp, err := bufpool.NewChanPool()
+//        	if err != nil {
+//        		log.Fatal(err)
+//        	}
+//        	for i := 0; i < 4*bufpool.DefaultPoolSize; i++ {
+//        		go func() {
+//        			for j := 0; j < 1000; j++ {
+//        				bb := bp.Get()
+//        				for k := 0; k < 3*bufpool.DefaultBufferSize; k++ {
+//        					bb.WriteByte(byte(k % 256))
+//        				}
+//        				bp.Put(bb)
+//        			}
+//        		}()
+//        	}
+//        }
+func NewChanPool(setters ...func(*poolConfig) error) (FreeList, error) {
+	pc := &poolConfig{
+		chSize:  DefaultPoolSize,
+		defSize: DefaultBufferSize,
+		maxSize: DefaultMaxBufferSize,
+	}
+	for _, setter := range setters {
+		if err := setter(pc); err != nil {
+			return nil, err
+		}
+	}
+	if pc.maxSize < pc.defSize {
+		return nil, fmt.Errorf("max buffer size must be greater or equal to default buffer size: %d, %d", pc.maxSize, pc.defSize)
+	}
+	bp := &ChanPool{
+		ch: make(chan *bytes.Buffer, pc.chSize),
+		pc: *pc,
+	}
+	return bp, nil
+}
+
+// Get returns an initialized buffer from the free-list.
+func (bp *ChanPool) Get() *bytes.Buffer {
+	select {
+	case bb := <-bp.ch:
+		// reuse buffer
+		return bb
+	default:
+		// empty channel: create new buffer
+		return bytes.NewBuffer(make([]byte, 0, bp.pc.defSize))
+	}
+}
+
+// Put will return a used buffer back to the free-list. If the capacity of the used buffer grew
+// beyond the max buffer size, it will be discarded and its memory returned to the runtime.
+func (bp *ChanPool) Put(bb *bytes.Buffer) {
+	if cap(bb.Bytes()) > bp.pc.maxSize {
+		return // drop buffer on floor if too big
+	}
+	bb.Reset()
+	select {
+	case bp.ch <- bb: // queue buffer for reuse
+	default: // drop on floor if channel full
+	}
+}
+
+// Reset releases memory for all buffers presently in the free-list back to the runtime. This method
+// is typically not called for long-running programs that use a free-list of buffers for a long
+// time.
+func (bp *ChanPool) Reset() {
+	for {
+		select {
+		case _ = <-bp.ch: // dropbuffer
+		default:
+			return // empty channel
+		}
+	}
+}

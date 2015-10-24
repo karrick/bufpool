@@ -2,12 +2,21 @@
 
 Go library for using a free list of byte buffers.
 
+## Description
+
+Several free-list algorithms are included to determine which performs
+best for various application scenarios.
+
+* NewChanPool -- uses channels to provide concurrent access to internal structures
+* NewLockPool -- uses sync.Mutex to provide concurrent access to internal structures
+* NewSyncPool -- uses sync.Pool to provide concurrent access to internal structures
+
 ### Usage
 
 Documentation is available via
 [![GoDoc](https://godoc.org/github.com/karrick/bufpool?status.svg)](https://godoc.org/github.com/karrick/bufpool).
 
-# Example
+### Example
 
 ```Go
     package main
@@ -19,7 +28,9 @@ Documentation is available via
     )
     
     func main() {
-    	bp, err := bufpool.New() // can have one or more of PoolSize(), BufferSize, and MaxSize()
+        // bufpool.New*() can all have one or more of PoolSize(), BufferSize, and MaxSize()
+        // to customize the FreeList
+    	bp, err := bufpool.NewChanPool()
     	if err != nil {
     		log.Fatal(err)
     	}
@@ -36,3 +47,8 @@ Documentation is available via
     	}
     }
 ```
+
+### Performance
+
+Benchmark functions are provided to determine which buffer free-list
+algorithm best suits a given application.
