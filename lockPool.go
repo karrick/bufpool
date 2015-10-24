@@ -65,13 +65,15 @@ func NewLockPool(setters ...func(*poolConfig) error) (FreeList, error) {
 // Get returns an initialized buffer from the free-list.
 func (bp *LockPool) Get() *bytes.Buffer {
 	bp.lock.Lock()
-	defer bp.lock.Unlock()
 
 	if len(bp.free) == 0 {
+		bp.lock.Unlock()
 		return bytes.NewBuffer(make([]byte, 0, bp.pc.defSize))
 	}
 	var bb *bytes.Buffer
-	bb, bp.free = bp.free[len(bp.free)-1], bp.free[:len(bp.free)-1]
+	lmo := len(bp.free) - 1
+	bb, bp.free = bp.free[lmo], bp.free[:lmo]
+	bp.lock.Unlock()
 	return bb
 }
 
@@ -83,13 +85,14 @@ func (bp *LockPool) Put(bb *bytes.Buffer) {
 	}
 
 	bp.lock.Lock()
-	defer bp.lock.Unlock()
 
 	if len(bp.free) == cap(bp.free) {
+		bp.lock.Unlock()
 		return // drop buffer on floor if already have enough
 	}
 	bb.Reset()
 	bp.free = append(bp.free, bb)
+	bp.lock.Unlock()
 }
 
 // Reset releases memory for all buffers presently in the free-list back to the runtime. This method
@@ -97,7 +100,6 @@ func (bp *LockPool) Put(bb *bytes.Buffer) {
 // time.
 func (bp *LockPool) Reset() {
 	bp.lock.Lock()
-	defer bp.lock.Unlock()
-
 	bp.free = bp.free[:0]
+	bp.lock.Unlock()
 }
