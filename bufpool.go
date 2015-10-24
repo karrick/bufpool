@@ -5,15 +5,24 @@ import (
 	"fmt"
 )
 
+// DefaultPoolSize is the default number of buffers that the free list will maintain.
 const DefaultPoolSize = 100
+
+// DefaultBufferSize is the default size used to create new buffers.
 const DefaultBufferSize = 4 * 1024
+
+// DefaultMaxBufferSize is the default size used to determine whether to keep buffers returned to
+// the pool.
 const DefaultMaxBufferSize = 16 * 1024
 
+// BufPool maintains a free list of buffers.
 type BufPool struct {
 	ch                       chan *bytes.Buffer
 	chSize, defSize, maxSize int
 }
 
+// New creates a new BufPool instance. The pool size, size of new buffers, and max size of buffers
+// to keep when returned to the pool can all be customized.
 func New(setters ...func(*BufPool) error) (*BufPool, error) {
 	bp := &BufPool{
 		chSize:  DefaultPoolSize,
@@ -32,6 +41,7 @@ func New(setters ...func(*BufPool) error) (*BufPool, error) {
 	return bp, nil
 }
 
+// Get returns an initialized buffer from the BufPool free list.
 func (bp *BufPool) Get() *bytes.Buffer {
 	select {
 	case bb := <-bp.ch:
@@ -43,6 +53,9 @@ func (bp *BufPool) Get() *bytes.Buffer {
 	}
 }
 
+// Put will return a used buffer back to the BufPool free list. If the capacity of the used buffer
+// grew beyond the BufPool's max buffer size, it will be discarded and its memory returned to the
+// runtime.
 func (bp *BufPool) Put(bb *bytes.Buffer) {
 	if cap(bb.Bytes()) > bp.maxSize {
 		// drop buffer on floor if too big
@@ -57,6 +70,7 @@ func (bp *BufPool) Put(bb *bytes.Buffer) {
 	}
 }
 
+// PoolSize specifies the number of buffers to maintain in the pool.
 func PoolSize(size int) func(*BufPool) error {
 	return func(bp *BufPool) error {
 		if size <= 0 {
@@ -67,6 +81,7 @@ func PoolSize(size int) func(*BufPool) error {
 	}
 }
 
+// BufferSize specifies the size of newly allocated buffers.
 func BufferSize(size int) func(*BufPool) error {
 	return func(bp *BufPool) error {
 		if size <= 0 {
@@ -77,6 +92,9 @@ func BufferSize(size int) func(*BufPool) error {
 	}
 }
 
+// MaxSize specifies the maximum size of buffers that ought to be kept when returned to the free
+// list.  Buffers with a capacity larger than this size will be discarded, and their memory returned
+// to the runtime.
 func MaxSize(size int) func(*BufPool) error {
 	return func(bp *BufPool) error {
 		if size <= 0 {
