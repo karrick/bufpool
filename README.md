@@ -1,5 +1,11 @@
 # bufpool
-Go library for using free list of byte buffers
+
+Go library for using a free list of byte buffers.
+
+### Usage
+
+Documentation is available via
+[![GoDoc](https://godoc.org/github.com/karrick/bufpool?status.svg)](https://godoc.org/github.com/karrick/bufpool).
 
 # Example
 
