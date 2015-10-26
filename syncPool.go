@@ -13,7 +13,9 @@ type SyncPool struct {
 }
 
 // NewSyncPool creates a new FreeList. The pool size, size of new buffers, and max size of buffers
-// to keep when returned to the pool can all be customized.
+// to keep when returned to the pool can all be customized.  Note that the PoolSize method has no
+// effect for free-lists created with NewSyncPool, because the Go runtime dynamically maintains the
+// size of pools created using sync.Pool.
 //
 //        package main
 //

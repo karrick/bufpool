@@ -100,7 +100,9 @@ func MaxKeep(size int) func(*poolConfig) error {
 	}
 }
 
-// PoolSize specifies the number of buffers to maintain in the pool.
+// PoolSize specifies the number of buffers to maintain in the pool.  This option has no effect,
+// however, on free-lists created with NewSyncPool, because the Go runtime dynamically maintains the
+// size of pools created using sync.Pool.
 //
 //        package main
 //
