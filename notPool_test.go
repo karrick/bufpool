@@ -40,17 +40,17 @@ func TestNotPool(t *testing.T) {
 	test(t, bp)
 }
 
-func BenchmarkNotPoolLowConcurrency(b *testing.B) {
+func BenchmarkLowNotPool(b *testing.B) {
 	bp, _ := NewNotPool()
 	bench(b, bp, lowConcurrency)
 }
 
-func BenchmarkNotPoolMedConcurrency(b *testing.B) {
+func BenchmarkMedNotPool(b *testing.B) {
 	bp, _ := NewNotPool()
 	bench(b, bp, medConcurrency)
 }
 
-func BenchmarkNotPoolHighConcurrency(b *testing.B) {
+func BenchmarkHighNotPool(b *testing.B) {
 	bp, _ := NewNotPool()
 	bench(b, bp, highConcurrency)
 }

@@ -13,17 +13,17 @@ func TestBspool(t *testing.T) {
 	test(t, bp)
 }
 
-func BenchmarkBpoolLowConcurrency(b *testing.B) {
+func BenchmarkLowBpool(b *testing.B) {
 	bp := bpool.NewSizedBufferPool(DefaultPoolSize, DefaultBufSize)
 	bench(b, bp, lowConcurrency)
 }
 
-func BenchmarkBpoolMedConcurrency(b *testing.B) {
+func BenchmarkMedBpool(b *testing.B) {
 	bp := bpool.NewSizedBufferPool(DefaultPoolSize, DefaultBufSize)
 	bench(b, bp, medConcurrency)
 }
 
-func BenchmarkBpoolHighConcurrency(b *testing.B) {
+func BenchmarkHighBpool(b *testing.B) {
 	bp := bpool.NewSizedBufferPool(DefaultPoolSize, DefaultBufSize)
 	bench(b, bp, highConcurrency)
 }

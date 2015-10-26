@@ -7,17 +7,17 @@ func TestChanPool(t *testing.T) {
 	test(t, bp)
 }
 
-func BenchmarkChanPoolLowConcurrency(b *testing.B) {
+func BenchmarkLowChanPool(b *testing.B) {
 	bp, _ := NewChanPool()
 	bench(b, bp, lowConcurrency)
 }
 
-func BenchmarkChanPoolMedConcurrency(b *testing.B) {
+func BenchmarkMedChanPool(b *testing.B) {
 	bp, _ := NewChanPool()
 	bench(b, bp, medConcurrency)
 }
 
-func BenchmarkChanPoolHighConcurrency(b *testing.B) {
+func BenchmarkHighChanPool(b *testing.B) {
 	bp, _ := NewChanPool()
 	bench(b, bp, highConcurrency)
 }

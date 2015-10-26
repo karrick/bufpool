@@ -7,17 +7,17 @@ func TestLockPool(t *testing.T) {
 	test(t, bp)
 }
 
-func BenchmarkLockPoolLowConcurrency(b *testing.B) {
+func BenchmarkLowLockPool(b *testing.B) {
 	bp, _ := NewLockPool()
 	bench(b, bp, lowConcurrency)
 }
 
-func BenchmarkLockPoolMedConcurrency(b *testing.B) {
+func BenchmarkMedLockPool(b *testing.B) {
 	bp, _ := NewLockPool()
 	bench(b, bp, medConcurrency)
 }
 
-func BenchmarkLockPoolHighConcurrency(b *testing.B) {
+func BenchmarkHighLockPool(b *testing.B) {
 	bp, _ := NewLockPool()
 	bench(b, bp, highConcurrency)
 }
