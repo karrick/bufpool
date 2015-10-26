@@ -94,12 +94,3 @@ func (bp *LockPool) Put(bb *bytes.Buffer) {
 	bp.free = append(bp.free, bb)
 	bp.lock.Unlock()
 }
-
-// Reset releases memory for all buffers presently in the free-list back to the runtime. This method
-// is typically not called for long-running programs that use a free-list of buffers for a long
-// time.
-func (bp *LockPool) Reset() {
-	bp.lock.Lock()
-	bp.free = bp.free[:0]
-	bp.lock.Unlock()
-}

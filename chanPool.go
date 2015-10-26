@@ -84,16 +84,3 @@ func (bp *ChanPool) Put(bb *bytes.Buffer) {
 	default: // drop on floor if channel full
 	}
 }
-
-// Reset releases memory for all buffers presently in the free-list back to the runtime. This method
-// is typically not called for long-running programs that use a free-list of buffers for a long
-// time.
-func (bp *ChanPool) Reset() {
-	for {
-		select {
-		case _ = <-bp.ch: // dropbuffer
-		default:
-			return // empty channel
-		}
-	}
-}
