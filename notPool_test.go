@@ -10,7 +10,7 @@ type notPool struct {
 	pc poolConfig
 }
 
-func NewNotPool(setters ...func(*poolConfig) error) (FreeList, error) {
+func NewNotPool(setters ...Configurator) (FreeList, error) {
 	pc := &poolConfig{
 		poolSize: DefaultPoolSize,
 		bufSize:  DefaultBufSize,

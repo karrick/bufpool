@@ -42,7 +42,7 @@ type SyncPool struct {
 //        		}()
 //        	}
 //        }
-func NewSyncPool(setters ...func(*poolConfig) error) (FreeList, error) {
+func NewSyncPool(setters ...Configurator) (FreeList, error) {
 	pc := &poolConfig{
 		poolSize: DefaultPoolSize,
 		bufSize:  DefaultBufSize,

@@ -41,7 +41,7 @@ type LockPool struct {
 //        		}()
 //        	}
 //        }
-func NewLockPool(setters ...func(*poolConfig) error) (FreeList, error) {
+func NewLockPool(setters ...Configurator) (FreeList, error) {
 	pc := &poolConfig{
 		poolSize: DefaultPoolSize,
 		bufSize:  DefaultBufSize,

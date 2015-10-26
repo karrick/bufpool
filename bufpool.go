@@ -26,6 +26,9 @@ type poolConfig struct {
 	bufSize, maxKeep, poolSize int
 }
 
+// Configurator is a function that modifies a pool configuration structure.
+type Configurator func(*poolConfig) error
+
 // BufSize specifies the size of newly allocated buffers.
 //
 //        package main
@@ -52,7 +55,7 @@ type poolConfig struct {
 //        		}()
 //        	}
 //        }
-func BufSize(size int) func(*poolConfig) error {
+func BufSize(size int) Configurator {
 	return func(pc *poolConfig) error {
 		if size <= 0 {
 			return fmt.Errorf("default buffer size must be greater than 0: %d", size)
@@ -90,7 +93,7 @@ func BufSize(size int) func(*poolConfig) error {
 //        		}()
 //        	}
 //        }
-func MaxKeep(size int) func(*poolConfig) error {
+func MaxKeep(size int) Configurator {
 	return func(pc *poolConfig) error {
 		if size <= 0 {
 			return fmt.Errorf("max buffer size must be greater than 0: %d", size)
@@ -128,7 +131,7 @@ func MaxKeep(size int) func(*poolConfig) error {
 //        		}()
 //        	}
 //        }
-func PoolSize(size int) func(*poolConfig) error {
+func PoolSize(size int) Configurator {
 	return func(pc *poolConfig) error {
 		if size <= 0 {
 			return fmt.Errorf("pool size must be greater than 0: %d", size)

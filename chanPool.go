@@ -39,7 +39,7 @@ type ChanPool struct {
 //        		}()
 //        	}
 //        }
-func NewChanPool(setters ...func(*poolConfig) error) (FreeList, error) {
+func NewChanPool(setters ...Configurator) (FreeList, error) {
 	pc := &poolConfig{
 		poolSize: DefaultPoolSize,
 		bufSize:  DefaultBufSize,
