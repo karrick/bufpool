@@ -90,7 +90,6 @@ func (bp *LockPool) Put(bb *bytes.Buffer) {
 		bp.lock.Unlock()
 		return // drop buffer on floor if already have enough
 	}
-	bb.Reset()
 	bp.free = append(bp.free, bb)
 	bp.lock.Unlock()
 }

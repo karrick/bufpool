@@ -78,7 +78,6 @@ func (bp *ChanPool) Put(bb *bytes.Buffer) {
 	if cap(bb.Bytes()) > bp.pc.maxKeep {
 		return // drop buffer on floor if too big
 	}
-	bb.Reset()
 	select {
 	case bp.ch <- bb: // queue buffer for reuse
 	default: // drop on floor if channel full

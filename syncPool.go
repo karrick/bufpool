@@ -74,6 +74,5 @@ func (bp *SyncPool) Put(bb *bytes.Buffer) {
 	if cap(bb.Bytes()) > bp.pc.maxKeep {
 		return // drop buffer on floor if too big
 	}
-	bb.Reset()
 	bp.pool.Put(bb)
 }
