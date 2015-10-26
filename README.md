@@ -2,6 +2,17 @@
 
 Go library for using a free-list of byte buffers.
 
+## Background
+
+A few excellent articles were published that resurfaced the topic of
+using free-lists of byte.Buffer structures in Go.  Because the Go
+runtime includes facilities to manage free-lists, I was curious about
+the performance characteristics of various methods of achieving this
+goal, and decided to benchmark these options.
+
+* https://blog.cloudflare.com/recycling-memory-buffers-in-go/
+* https://elithrar.github.io/article/using-buffer-pools-with-go/
+
 ## Description
 
 Several free-list algorithms are included to allow selection of
