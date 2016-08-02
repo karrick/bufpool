@@ -80,7 +80,7 @@ func (bp *LockPool) Get() *bytes.Buffer {
 // Put will return a used buffer back to the free-list. If the capacity of the used buffer grew
 // beyond the max buffer size, it will be discarded and its memory returned to the runtime.
 func (bp *LockPool) Put(bb *bytes.Buffer) {
-	if cap(bb.Bytes()) > bp.pc.maxKeep {
+	if bb.Cap() > bp.pc.maxKeep {
 		return // drop buffer on floor if too big
 	}
 
