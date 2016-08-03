@@ -40,6 +40,7 @@ const medConcurrency = 128
 const highConcurrency = 1024
 
 func bench(b *testing.B, bp FreeList, concurrency int) {
+	b.ResetTimer()
 	const loops = 1024
 	for i := 0; i < b.N; i++ {
 		testC(bp, concurrency, loops)
