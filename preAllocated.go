@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	gopool "gopkg.in/karrick/gopool.v1"
+	"github.com/karrick/gopool"
 )
 
 type preAllocated struct {
