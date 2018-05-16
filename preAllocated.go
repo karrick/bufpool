@@ -46,10 +46,13 @@ func NewPreAllocatedPool(setters ...Configurator) (FreeList, error) {
 	}, nil
 }
 
+// Get returns an initialized buffer from the free-list.
 func (p *preAllocated) Get() *bytes.Buffer {
 	return p.pool.Get().(*bytes.Buffer)
 }
 
+// Put will return a used buffer back to the free-list. If the capacity of the used buffer grew
+// beyond the max buffer size, it will be discarded and its memory returned to the runtime.
 func (p *preAllocated) Put(bb *bytes.Buffer) {
 	if bb.Cap() > p.maxKeep {
 		if newBB, err := p.factory(); err == nil {

@@ -21,3 +21,9 @@ func BenchmarkHighPreAllocatedPool(b *testing.B) {
 	bp, _ := NewPreAllocatedPool()
 	bench(b, bp, highConcurrency)
 }
+
+func BenchmarkHighPreAllocatedPoolRuthless(b *testing.B) {
+	b.Skip("test kills pre-allocated pool")
+	bp, _ := NewPreAllocatedPool()
+	benchRuthless(b, bp, highConcurrency)
+}

@@ -61,15 +61,13 @@ func NewChanPool(setters ...Configurator) (FreeList, error) {
 }
 
 // Get returns an initialized buffer from the free-list.
-func (bp *ChanPool) Get() *bytes.Buffer {
+func (bp *ChanPool) Get() (bb *bytes.Buffer) {
 	select {
-	case bb := <-bp.ch:
-		// reuse buffer
-		return bb
-	default:
-		// empty channel: create new buffer
-		return bytes.NewBuffer(make([]byte, 0, bp.pc.bufSize))
+	case bb = <-bp.ch: // grab buffer from channel
+	default: // if nothing in channel, return a new buffer
+		bb = bytes.NewBuffer(make([]byte, 0, bp.pc.bufSize))
 	}
+	return
 }
 
 // Put will return a used buffer back to the free-list. If the capacity of the used buffer grew
@@ -78,7 +76,11 @@ func (bp *ChanPool) Put(bb *bytes.Buffer) {
 	if bb.Cap() > bp.pc.maxKeep {
 		return // drop buffer on floor if too big
 	}
+
+	// NOTE: I'd like to reset only if it goes back in channel, but once we give it back we
+	// cannot touch it. Also, Reset only modifies a single integer bb data structure field.
 	bb.Reset()
+
 	select {
 	case bp.ch <- bb: // queue buffer for reuse
 	default: // drop on floor if channel full

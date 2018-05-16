@@ -21,3 +21,8 @@ func BenchmarkHighLockPool(b *testing.B) {
 	bp, _ := NewLockPool()
 	bench(b, bp, highConcurrency)
 }
+
+func BenchmarkHighLockPoolRuthless(b *testing.B) {
+	bp, _ := NewLockPool()
+	benchRuthless(b, bp, highConcurrency)
+}

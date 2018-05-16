@@ -27,3 +27,8 @@ func BenchmarkHighBpool(b *testing.B) {
 	bp := bpool.NewSizedBufferPool(DefaultPoolSize, DefaultBufSize)
 	bench(b, bp, highConcurrency)
 }
+
+func BenchmarkHighBpoolRuthless(b *testing.B) {
+	bp := bpool.NewSizedBufferPool(DefaultPoolSize, DefaultBufSize)
+	benchRuthless(b, bp, highConcurrency)
+}

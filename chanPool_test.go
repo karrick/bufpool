@@ -21,3 +21,8 @@ func BenchmarkHighChanPool(b *testing.B) {
 	bp, _ := NewChanPool()
 	bench(b, bp, highConcurrency)
 }
+
+func BenchmarkHighChanPoolRuthless(b *testing.B) {
+	bp, _ := NewChanPool()
+	benchRuthless(b, bp, highConcurrency)
+}

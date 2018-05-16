@@ -54,3 +54,8 @@ func BenchmarkHighNotPool(b *testing.B) {
 	bp, _ := NewNotPool()
 	bench(b, bp, highConcurrency)
 }
+
+func BenchmarkHighNotPoolRuthless(b *testing.B) {
+	bp, _ := NewNotPool()
+	benchRuthless(b, bp, highConcurrency)
+}

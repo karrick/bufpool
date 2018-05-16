@@ -15,8 +15,7 @@ const DefaultMaxKeep = 16 * 1024
 // DefaultPoolSize is the default number of buffers that the free-list will maintain.
 const DefaultPoolSize = 100
 
-// FreeList represents a data structure that maintains a free-list of buffers, accesible via Get and
-// Put methods.
+// FreeList is the interface implemented by an object that acts as a free-list resource pool.
 type FreeList interface {
 	Get() *bytes.Buffer
 	Put(*bytes.Buffer)
