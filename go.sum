@@ -1,0 +1,4 @@
+github.com/karrick/gopool v1.2.0 h1:wHf8ckfRCnBDXf/86D6JMiRekeNgmKOl2R//VhD3vbk=
+github.com/karrick/gopool v1.2.0/go.mod h1:iazR3d8XJl363Qmuv6ytChQRTjL7Jf/V9+nNHLZblow=
+github.com/oxtoacart/bpool v0.0.0-20150712133111-4e1c5567d7c2 h1:CXwSGu/LYmbjEab5aMCs5usQRVBGThelUKBNnoSOuso=
+github.com/oxtoacart/bpool v0.0.0-20150712133111-4e1c5567d7c2/go.mod h1:L3UMQOThbttwfYRNFOWLLVXMhk5Lkio4GGOtw5UrxS0=

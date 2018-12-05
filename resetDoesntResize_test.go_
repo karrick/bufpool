@@ -1,0 +1,27 @@
+package bufpool
+
+import (
+	"bytes"
+	"testing"
+)
+
+func TestReset(t *testing.T) {
+	initialSize := 4 * 1024
+
+	bb := bytes.NewBuffer(make([]byte, initialSize))
+
+	t.Logf("pre use: %d", bb.Cap())
+
+	for i := 0; i < initialSize*16; i++ {
+		_, err := bb.Write([]byte("1"))
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	t.Logf("before reset: %d", bb.Cap())
+
+	bb.Reset()
+
+	t.Logf("after reset: %d", bb.Cap())
+}
